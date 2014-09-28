@@ -598,25 +598,35 @@ class BluetoothOppNotification {
             Uri contentUri = Uri.parse(BluetoothShare.CONTENT_URI + "/" + id);
 
             if (mIncomingShownId != id) {
-                Notification n = new Notification();
-                n.icon = R.drawable.bt_incomming_file_notification;
-                n.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
-                n.flags |= Notification.FLAG_ONGOING_EVENT;
-                n.defaults = Notification.DEFAULT_SOUND;
-                n.tickerText = title;
+                NotificationCompat.Builder n = new NotificationCompat.Builder(this);
+                //n.icon = R.drawable.bt_incomming_file_notification;
+                n.setSmallIcon(R.drawable.bt_incomming_file_notification);
+                //n.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
+                n.setOnlyAlertOnce(true);
+                //n.flags |= Notification.FLAG_ONGOING_EVENT;
+                n.setOngoing(true);
+                //n.defaults = Notification.DEFAULT_SOUND;
+                n.setDefaults(Notification.DEFAULT_SOUND);
+                //n.tickerText = title;
+                n.setTicker(title);
 
                 Intent intent = new Intent(Constants.ACTION_INCOMING_FILE_CONFIRM);
                 intent.setClassName(Constants.THIS_PACKAGE_NAME, BluetoothOppReceiver.class.getName());
                 intent.setDataAndNormalize(contentUri);
 
-                n.when = timeStamp;
-                n.setLatestEventInfo(mContext, title, caption, PendingIntent.getBroadcast(mContext, 0,
-                    intent, 0));
+                //n.when = timeStamp;
+                n.setWhen(timeStamp);
+                //n.setLatestEventInfo(mContext, title, caption, PendingIntent.getBroadcast(mContext, 0,
+                //    intent, 0));
+                n.setStyle(new NotificationCompat.BigTextStyle() bigText());
+                n.addAction(R.drawable.ic_action_accept , getString(R.string.incoming_file_confirm_ok), /*TODO*/);
+                n.addAction(R.drawable.ic_action_cancel , getString(R.string.incoming_file_confirm_cancel), /*TODO*/);
 
                 intent = new Intent(Constants.ACTION_HIDE);
                 intent.setClassName(Constants.THIS_PACKAGE_NAME, BluetoothOppReceiver.class.getName());
                 intent.setDataAndNormalize(contentUri);
-                n.deleteIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
+                //n.deleteIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
+                n.setDeleteIntent(PendingIntent.getBroadcast(mContext, 0, intent, 0));
 
                 mNotificationMgr.notify(id, n);
                 mIncomingShownId = id;
